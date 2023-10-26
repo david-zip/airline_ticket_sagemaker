@@ -193,6 +193,8 @@ def get_pipeline(
         role=role
     )
 
+    # model evaluation
+    model_prefix = f'{base_job_name}/AirlineTicketTrain'
     step_args = script_eval.run(
         inputs=[
             ProcessingInput(
@@ -240,8 +242,6 @@ def get_pipeline(
             content_type="application/json"
         )
     )
-
-    model_prefix = f'{base_job_name}/AirlineTicketTrain'
 
     model = Model(
         image_uri=image_uri,
