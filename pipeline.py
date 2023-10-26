@@ -47,11 +47,12 @@ from sagemaker.sklearn.processing import SKLearnProcessor
 BASE_DIR = os.path.abspath('')
 
 nw = datetime.now()
+formatted_date_time = nw.strftime('%Y-%m-%d-%H-%M')
 
 def get_pipeline(
     base_job_name = f'AirlineTicket',
     default_bucket = 'sagemaker-ticket-price',
-    pipeline_name = f'{nw.year}-{nw.month}-{nw.day}({nw.hour}-{nw.minute})-Airline-Ticket-Price',
+    pipeline_name=f'{formatted_date_time}-Airline-Ticket-Price',
     region = 'eu-west-1'
 ):
     # initialise sagemaker session
@@ -158,7 +159,7 @@ def get_pipeline(
         hyperparameter_ranges=hyperparameter_ranges,
         max_jobs=3,
         max_parallel_jobs=3,
-        strategy='random'
+        strategy='Random'
     )
 
     # train xgboost model
@@ -251,7 +252,7 @@ def get_pipeline(
             prefix=model_prefix
         ),
         predictor_cls=XGBoostPredictor,
-        sagemamer_session=sagemaker_session,
+        sagemaker_session=pipeline_session,
         role=role
     )
 
