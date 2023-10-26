@@ -122,7 +122,7 @@ if __name__=='__main__':
     raw_data['Date Difference'] = (journey_date - booking_date) / np.timedelta64(1, 'D')
 
     # find journey day and journey month
-    raw_data['Journey day'] = journey_date.dt..day_name()
+    raw_data['Journey day'] = journey_date.dt.day_name()
     raw_data['Journey month'] = journey_date.dt.month
 
     # convert time into continuous variable
