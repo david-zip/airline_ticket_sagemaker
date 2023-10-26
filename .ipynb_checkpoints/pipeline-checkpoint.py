@@ -196,7 +196,11 @@ def get_pipeline(
     step_args = script_eval.run(
         inputs=[
             ProcessingInput(
-                source=step_tune.properties.ModelArtifacts.S3ModelArtifacts,
+                source=step_tune.get_top_model_s3_uri(
+                    top_k=0,
+                    s3_bucket=default_bucket,
+                    prefix=model_prefix
+            ),
                 destination="/opt/ml/processing/model",
             ),
             ProcessingInput(
