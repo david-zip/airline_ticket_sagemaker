@@ -47,7 +47,7 @@ from sagemaker.sklearn.processing import SKLearnProcessor
 BASE_DIR = os.path.abspath('')
 
 nw = datetime.now()
-formatted_date_time = nw.strftime('%Y-%m-%d-%H-%M')
+formatted_date_time = nw.strftime('%Y-%m-%d')
 
 def get_pipeline(
     base_job_name = f'AirlineTicket',
@@ -156,6 +156,7 @@ def get_pipeline(
     tuner_log = HyperparameterTuner(
         estimator=xgb_train,
         objective_metric_name=objective_metric_name,
+        objective_type='Minimize',  # Adjusted to Minimize
         hyperparameter_ranges=hyperparameter_ranges,
         max_jobs=3,
         max_parallel_jobs=3,
