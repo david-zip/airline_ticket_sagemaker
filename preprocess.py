@@ -21,7 +21,7 @@ if __name__=='__main__':
     
     # downloading data
     logger.debug('Downloading data')
-    BASE_DIR = "/opt/ml/processing"
+    BASE_DIR = "/opt/ml/input"
     pathlib.Path(f"{BASE_DIR}/data").mkdir(parents=True, exist_ok=True)
     input_data = args.input_data # get input data from input data parameter
     bucket = input_data.split("/")[2]
