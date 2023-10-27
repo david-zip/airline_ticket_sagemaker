@@ -154,6 +154,8 @@ if __name__=='__main__':
     pd.DataFrame(validation).to_csv(f"{BASE_DIR}/validation/validation.csv", header=False, index=False)
     pd.DataFrame(test).to_csv(f"{BASE_DIR}/test/test.csv", header=False, index=False)
     
+    pathlib.Path(f"{BASE_DIR}/input").mkdir(parents=True, exist_ok=True)
+
     pd.DataFrame(train).to_csv(f"/opt/ml/input/train/train.csv", header=False, index=False)
     pd.DataFrame(validation).to_csv(f"/opt/ml/input/validation/validation.csv", header=False, index=False)
     pd.DataFrame(test).to_csv(f"/opt/ml/input/test/test.csv", header=False, index=False)
