@@ -138,33 +138,16 @@ def get_pipeline(
     )
 
     xgb_train.set_hyperparameters(
-        eval_metric='rmse',
         objective="reg:squarederror",
         num_round=50,
+        max_depth=10,
         min_child_weight=6,
         subsample=0.5,
         silent=0
     )
 
-    # initialise hyperparameter tuner
-    objective_metric_name = 'validation:rmse'
-
-    hyperparameter_ranges = {
-        'max_depth': IntegerParameter(min_value=6, max_value=9, scaling_type='Linear')
-    }
-
-    tuner_log = HyperparameterTuner(
-        estimator=xgb_train,
-        objective_metric_name=objective_metric_name,
-        objective_type='Minimize',  # Adjusted to Minimize
-        hyperparameter_ranges=hyperparameter_ranges,
-        max_jobs=3,
-        max_parallel_jobs=3,
-        strategy='Random'
-    )
-
     # train xgboost model
-    step_args = tuner_log.fit(
+    step_args = xgb_train.fit(
         inputs={
             "train": TrainingInput(
                 s3_data=step_process.properties.ProcessingOutputConfig.Outputs[
@@ -181,10 +164,12 @@ def get_pipeline(
         }
     )
 
-    step_tune = TuningStep(
-        name="HPOTuningAirlinePrice",
+    step_train = TrainingStep(
+        name="TrainingAirlinePrice",
         step_args=step_args
     )
+    
+    # model evaluation
     script_eval = ScriptProcessor(
         image_uri=image_uri,
         command=["python3"],
@@ -195,16 +180,11 @@ def get_pipeline(
         role=role
     )
 
-    # model evaluation
     model_prefix = f'{base_job_name}/AirlineTicketTrain'
     step_args = script_eval.run(
         inputs=[
             ProcessingInput(
-                source=step_tune.get_top_model_s3_uri(
-                    top_k=0,
-                    s3_bucket=default_bucket,
-                    prefix=model_prefix
-            ),
+                source=step_train.properties.ModelArtifacts.S3ModelArtifacts,
                 destination="/opt/ml/processing/model",
             ),
             ProcessingInput(
@@ -247,11 +227,7 @@ def get_pipeline(
 
     model = Model(
         image_uri=image_uri,
-        model_data=step_tune.get_top_model_s3_uri(
-            top_k=0,
-            s3_bucket=default_bucket,
-            prefix=model_prefix
-        ),
+        model_data=step_train.properties.ModelArtifacts.S3ModelArtifacts,
         predictor_cls=XGBoostPredictor,
         sagemaker_session=pipeline_session,
         role=role
@@ -290,7 +266,7 @@ def get_pipeline(
         name=pipeline_name,
         steps=[
             step_process,
-            step_tune,
+            step_train,
             step_eval,
             step_cond
         ],
