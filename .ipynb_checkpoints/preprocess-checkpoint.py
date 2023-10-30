@@ -125,6 +125,15 @@ if __name__=='__main__':
     raw_data['Journey day'] = journey_date.dt.day_name()
     raw_data['Journey month'] = journey_date.dt.month
 
+    # apply ordinal encoding to journey day
+    unique_day = pd.unique(raw_data['Journey day']).tolist()
+
+    day_encoding = {}
+    for i in range(len(unique_day)):
+        day_encoding[unique_day[i]] = i + 1
+
+    raw_data['Journey day'] = raw_data['Journey day'].map(day_encoding)
+
     # convert time into continuous variable
     duration_cte = raw_data['Duration'].str.split('h ', n=-1, expand=True)
 

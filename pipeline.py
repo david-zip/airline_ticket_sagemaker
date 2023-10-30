@@ -253,7 +253,7 @@ def get_pipeline(
             property_file=evaluation_report,
             json_path="regression_metrics.mse.value"
         ),
-        right=10.0
+        right=15.0
     )
     step_cond = ConditionStep(
         name="CheckMSEAirlinePriceEvaluation",
